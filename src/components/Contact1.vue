@@ -20,11 +20,6 @@
               placeholder="Name"
               id="name"
               v-model="name"
-              v-model.trim="$v.name.$model"
-              :class="{
-                'is-invalid': $v.name.$error,
-                'is-valid': $v.name.$invalid,
-              }"
               required
             />
 
@@ -36,37 +31,10 @@
               id="email"
               v-model="email"
               :rules="rules.email"
-              v-model.trim="$v.email.$model"
-              :class="{
-                'is-invalid': $v.email.$error,
-                'is-valid': $v.email.$invalid,
-              }"
               required
             />
           </div>
-          <div class="new">
-            <!-- <div class="invalid-name">
-              <div v-if="$v.name.$error" class="invalid-feedback">
-                <div class="invalid2">
-                  <span v-if="!$v.name.required" class="invalid1"
-                    >Name is required</span
-                  >
-                  <span v-if="!$v.name.minLength" class="invalid1"
-                    >Name must contain at least 3 characters</span
-                  >
-                </div>
-              </div>
-            </div> -->
-            <div class="invalid-email">
-              <div v-if="$v.email.$error" class="invalid-feedback">
-                <div class="invalid2">
-                  <span v-if="!$v.email.required" class="invalid1"
-                    >email is required</span
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
+
           <br />
           <div class="detail-div">
             <input
@@ -80,15 +48,9 @@
               placeholder="Contact"
               id="contact"
               v-model="number"
-              v-model.trim="$v.number.$model"
-              :class="{
-                'is-invalid': $v.number.$error,
-                'is-valid': $v.number.$invalid,
-              }"
               required
             />
 
-            <!-- <span v-if="!$v.number.required">number is required</span> -->
             <input
               type="text"
               name="subject"
@@ -97,23 +59,7 @@
               v-model="subject"
             />
           </div>
-          <!-- <span v-if="!$v.subject.required">subject is required</span> -->
 
-          <div class="invalid-number">
-            <div v-if="$v.number.$error" class="invalid-feedback">
-              <div class="invalid2">
-                <span v-if="!$v.number.required" class="invalid1"
-                  >number is required</span
-                >
-                <span v-if="!$v.number.minLength" class="invalid1"
-                  >must be 10 digits</span
-                >
-                <span v-if="!$v.number.maxLength" class="invalid1"
-                  >must be 10 digits</span
-                >
-              </div>
-            </div>
-          </div>
           <br />
           <textarea
             rows="4"
@@ -122,22 +68,8 @@
             placeholder="Message"
             id="msg"
             v-model="msg"
-            v-model.trim="$v.msg.$model"
-            :class="{
-              'is-invalid': $v.msg.$error,
-              'is-valid': $v.msg.$invalid,
-            }"
             required
           />
-        </div>
-        <div class="invalid-msg">
-          <div v-if="$v.msg.$error" class="invalid-feedback">
-            <div class="invalid2">
-              <span v-if="!$v.msg.required" class="invalid1"
-                >message is required</span
-              >
-            </div>
-          </div>
         </div>
 
         <br />
@@ -154,45 +86,7 @@ import { required, minLength, maxLength } from "vuelidate/lib/validators";
 
 export default {
   name: "contact",
-  // data() {
-  //   return
-  //     {
-  //       name: "",
-  //       email: "",
-  //       number: "",
-  //       subject: "",
-  //       msg: "",
-  //     },
-  //     rules:{
-  //       phone:
-  //         {
-  //         (v1) => !!v1 || 'Phone number is required',
-  //         (v1) => /\d{10}/.test(v1) || 'Please enter correct mobile number',
-  //         (v1) =>
-  //           (v1 && v1.length === 10) || 'Please enter correct mobile number',
 
-  //     },
-  //     {
-  //       //   valid: true,
-  //       //   fname: "",
-  //       //   nameRules: [
-  //       //     (v) => !!v || "name is required",
-  //       //     (v) =>
-  //       //       (v && v.length <= 10) ||
-  //       //       "name must be less than 10 characters long",
-  //       //   ],
-  //       name: "",
-  //       email: "",
-  //         number: "",
-  //         msg: "",
-  //       // emailRules: [
-  //       //   (v) => !!v || "email is required",
-  //       //   (v) => /.+@.+\..+/.test(v) || "Email must be valid",
-  //       // ],
-  //       //subject: "",
-  //     },
-  // },
-  // },
   data() {
     return {
       name: "",
@@ -202,21 +96,17 @@ export default {
       msg: "",
       rules: {
         name: [(val) => (val || "").length > 0 || "This field is required"],
-        // emailRules: [
-        //   (v) => !!v || 'E-mail is required',
-        //   (v) => /.+@.+/.test(v) || 'E-mail must be valid',
-        // ],
 
         email: [
           (v) => !!v || "E-mail is required",
           (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
         ],
+
         phone: [
           (v1) => !!v1 || "Phone number is required",
           (v1) => /\d{10}/.test(v1) || "Please enter correct mobile number",
           (v1) =>
             (v1 && v1.length === 10) || "Please enter correct mobile number",
-          // (v1) => v1.length > 0 && v.length < 16,
         ],
       },
     };
@@ -233,18 +123,10 @@ export default {
       required,
       minLength: minLength(10),
       maxLength: maxLength(10),
-      // min: 10,maxlength="10"
-      // max: 10,
     },
     msg: { required },
   },
-  // watch: {
-  //   email(value) {
-  //     // binding this to the data value in the email input
-  //     this.email = value;
-  //     this.validateEmail(value);
-  //   },
-  // },
+
   computed: {
     formIsValid() {
       return this.name && this.email && this.number && this.subject && this.msg;
@@ -262,7 +144,6 @@ export default {
     isLetter(e) {
       const char = String.fromCharCode(e.keyCode); // Get the character
       if (/^[A-Za-z]+$/.test(char)) return true;
-      // Match with regex
       else e.preventDefault(); // If not match, don't add to input text
     },
     submit() {
