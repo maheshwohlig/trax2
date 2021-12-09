@@ -13,7 +13,10 @@
         <div class="contact-detail-container">
           <div class="detail-div">
             <input
+              autocomplete="off"
               type="text"
+              v-on:keypress="isLetter($event)"
+              :rules="rules.name"
               placeholder="Name"
               id="name"
               v-model="name"
@@ -22,10 +25,12 @@
                 'is-invalid': $v.name.$error,
                 'is-valid': $v.name.$invalid,
               }"
+              auto-complete="off"
               required
             />
 
             <input
+              autocomplete="off"
               type="email"
               name="email"
               placeholder="Email"
@@ -66,8 +71,12 @@
           <br />
           <div class="detail-div">
             <input
-              type="number"
-              :counter="10"
+              autocomplete="off"
+              type="text"
+              @keypress="onlyNumber"
+              minlength="10"
+              maxlength="10"
+              :rules="rules.phone"
               name="contact"
               placeholder="Contact"
               id="contact"
@@ -96,6 +105,12 @@
               <div class="invalid2">
                 <span v-if="!$v.number.required" class="invalid1"
                   >number is required</span
+                >
+                <span v-if="!$v.number.minLength" class="invalid1"
+                  >must be 10 digits</span
+                >
+                <span v-if="!$v.number.maxLength" class="invalid1"
+                  >must be 10 digits</span
                 >
               </div>
             </div>
@@ -136,41 +151,74 @@
 </template>
 
 <script>
-import { required, minLength } from "vuelidate/lib/validators";
+import { required, minLength, maxLength } from "vuelidate/lib/validators";
 
 export default {
   name: "contact",
-  data() {
-    return (
-      {
-        name: "",
-        email: "",
-        number: "",
-        subject: "",
-        msg: "",
-      },
-      {
-        //   valid: true,
-        //   fname: "",
-        //   nameRules: [
-        //     (v) => !!v || "name is required",
-        //     (v) =>
-        //       (v && v.length <= 10) ||
-        //       "name must be less than 10 characters long",
-        //   ],
-        name: "",
-        email: "",
-        // emailRules: [
-        //   (v) => !!v || "email is required",
-        //   (v) => /.+@.+\..+/.test(v) || "Email must be valid",
-        // ],
-        number: "",
-        //subject: "",
-        msg: "",
-      }
-    );
-  },
+  // data() {
+  //   return
+  //     {
+  //       name: "",
+  //       email: "",
+  //       number: "",
+  //       subject: "",
+  //       msg: "",
+  //     },
+  //     rules:{
+  //       phone:
+  //         {
+  //         (v1) => !!v1 || 'Phone number is required',
+  //         (v1) => /\d{10}/.test(v1) || 'Please enter correct mobile number',
+  //         (v1) =>
+  //           (v1 && v1.length === 10) || 'Please enter correct mobile number',
 
+  //     },
+  //     {
+  //       //   valid: true,
+  //       //   fname: "",
+  //       //   nameRules: [
+  //       //     (v) => !!v || "name is required",
+  //       //     (v) =>
+  //       //       (v && v.length <= 10) ||
+  //       //       "name must be less than 10 characters long",
+  //       //   ],
+  //       name: "",
+  //       email: "",
+  //         number: "",
+  //         msg: "",
+  //       // emailRules: [
+  //       //   (v) => !!v || "email is required",
+  //       //   (v) => /.+@.+\..+/.test(v) || "Email must be valid",
+  //       // ],
+  //       //subject: "",
+  //     },
+  // },
+  // },
+  data() {
+    return {
+      name: "",
+      email: "",
+      number: "",
+      subject: "",
+      msg: "",
+      rules: {
+        name: [(val) => (val || "").length > 0 || "This field is required"],
+        // emailRules: [
+        //   (v) => !!v || 'E-mail is required',
+        //   (v) => /.+@.+/.test(v) || 'E-mail must be valid',
+        // ],
+
+        emailRules: [(v) => /.+@.+/.test(v) || "Invalid Email address"],
+        phone: [
+          (v1) => !!v1 || "Phone number is required",
+          (v1) => /\d{10}/.test(v1) || "Please enter correct mobile number",
+          (v1) =>
+            (v1 && v1.length === 10) || "Please enter correct mobile number",
+          // (v1) => v1.length > 0 && v.length < 16,
+        ],
+      },
+    };
+  },
   validations: {
     name: {
       required,
@@ -181,6 +229,10 @@ export default {
     },
     number: {
       required,
+      minLength: minLength(10),
+      maxLength: maxLength(10),
+      // min: 10,maxlength="10"
+      // max: 10,
     },
     msg: { required },
   },
@@ -201,6 +253,12 @@ export default {
     //   console.log("message", this.msg);
     //   alert("Form Subit");
     // },
+    isLetter(e) {
+      const char = String.fromCharCode(e.keyCode); // Get the character
+      if (/^[A-Za-z]+$/.test(char)) return true;
+      // Match with regex
+      else e.preventDefault(); // If not match, don't add to input text
+    },
     submit() {
       if (this.$v.$invalid) {
         this.$v.$touch();
@@ -208,6 +266,13 @@ export default {
       } else {
         console.log("afsfgweg");
         alert("Form Submitted");
+      }
+    },
+    onlyNumber($event) {
+      const keyCode = $event.keyCode ? $event.keyCode : $event.which;
+      if ((keyCode < 48 || keyCode > 57) && keyCode !== 46) {
+        // 46 is dot
+        $event.preventDefault();
       }
     },
   },
@@ -218,6 +283,7 @@ export default {
 .contact-cover-img {
   width: 100%;
   height: 100%;
+  margin-top: -0.7%;
 }
 
 .contact-ontext {
@@ -234,12 +300,12 @@ export default {
 }
 
 textarea {
-  width: 100%;
+  width: 96%;
   padding: 4%;
-  
   border-radius: 40px;
   background-color: rgba(0, 0, 0, 0.6);
-  border: 1px solid black;
+  border: 1px solid rgb(253, 253, 253);
+  color: white;
 }
 
 input {
@@ -248,6 +314,7 @@ input {
   border-radius: 50px;
   width: 45%;
   background-color: rgba(0, 0, 0, 0.6);
+  color: white;
 }
 
 .detail-div {
