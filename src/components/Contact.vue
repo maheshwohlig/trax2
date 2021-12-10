@@ -25,6 +25,7 @@
                 'is-invalid': $v.name.$error,
                 'is-valid': $v.name.$invalid,
               }"
+              auto-complete="off"
               required
             />
 
@@ -45,7 +46,7 @@
             />
           </div>
           <div class="new">
-            <!-- <div class="invalid-name">
+            <div class="invalid-name">
               <div v-if="$v.name.$error" class="invalid-feedback">
                 <div class="invalid2">
                   <span v-if="!$v.name.required" class="invalid1"
@@ -56,12 +57,15 @@
                   >
                 </div>
               </div>
-            </div> -->
+            </div>
             <div class="invalid-email">
               <div v-if="$v.email.$error" class="invalid-feedback">
                 <div class="invalid2">
                   <span v-if="!$v.email.required" class="invalid1"
                     >email is required</span
+                  >
+                  <span v-if="!$v.email.email" class="invalid1"
+                    >Invalid Email</span
                   >
                 </div>
               </div>
@@ -141,7 +145,7 @@
         </div>
 
         <br />
-        <button @click="submit" :disabled="!formIsValid" class="cover-img-btn">
+        <button @click="submit" :disabled="invalid" class="cover-img-btn">
           SUBMIT REQUEST
         </button>
       </form>
@@ -150,7 +154,12 @@
 </template>
 
 <script>
-import { required, minLength, maxLength } from "vuelidate/lib/validators";
+import {
+  required,
+  minLength,
+  maxLength,
+  email,
+} from "vuelidate/lib/validators";
 
 export default {
   name: "contact",
@@ -207,10 +216,10 @@ export default {
         //   (v) => /.+@.+/.test(v) || 'E-mail must be valid',
         // ],
 
-        email: [
-          (v) => !!v || "E-mail is required",
-          (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
-        ],
+        // email: [
+        //   (v) => !!v || "E-mail is required",
+        //   (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
+        // ],
         phone: [
           (v1) => !!v1 || "Phone number is required",
           (v1) => /\d{10}/.test(v1) || "Please enter correct mobile number",
@@ -228,6 +237,7 @@ export default {
     },
     email: {
       required,
+      email,
     },
     number: {
       required,
@@ -245,11 +255,7 @@ export default {
   //     this.validateEmail(value);
   //   },
   // },
-  computed: {
-    formIsValid() {
-      return this.name && this.email && this.number && this.subject && this.msg;
-    },
-  },
+
   methods: {
     // submitForm() {
     //   console.log("name", this.fname);
@@ -266,10 +272,11 @@ export default {
       else e.preventDefault(); // If not match, don't add to input text
     },
     submit() {
-      if (this.form.$formIsValid) {
+      if (this.$v.$invalid) {
         this.$v.$touch();
         console.log("Invalid");
       } else {
+        console.log("afsfgweg");
         alert("Form Submitted");
       }
     },
